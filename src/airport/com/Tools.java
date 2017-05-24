@@ -6,7 +6,7 @@ import java.awt.Image;
 import javax.swing.ImageIcon;
 
 public class Tools {
-    
+    //On instancie nos variables ici, ce qui permet d'y accéder dans chacune de nos classes si besoin.
     public static int nbAvion = 20; //nombre d'avion
     public static int nbPisteArr = 2; //pistes d'atterrisage
     public static int nbPisteDep = 2; //pistes de depart

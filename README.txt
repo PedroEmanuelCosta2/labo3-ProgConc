@@ -2,6 +2,23 @@ Laboratoire 3 de programmation Concurrente
 
 Utilisation :
 
+Il suffit de saisir ses configs désirées et de cocher la bonne version dans laquelle on aimerait avoir notre application.
+
+Cocher la case mode test va rien afficher mais fera les procédures dans le fond et affichera dans le terminal les temps obtenus de comparaisons et
+de performances. L'application sera bloquée tant que tous les tests ne seront pas finis. 
+
+Si l'utilisateur coche la case Blocking Queue ou Circular Buffer (ou les deux), cela va lancer les frames correspondantes et affichera les 
+avions passés dans chacunes des étapes. Cela permettra de voir le bon fonctionnement de l'application.
+C'est ce qui se déroule dans le mode test sauf que nous n'affichons rien de ce qu'il se passe.
+
+Notes pour killian --> ci dessous tu as les temps que j'ai eu avec mon ordi, je pense que ce serait bien que tu fasses pareil avec le tiens.
+comme expliqué, il suffit que tu lances l'appli en mode test et d'attendre de voir les résultats dans le terminal. 
+Fait les tests avec le temps aléatoire et fixé à 1000 ms. (pour changer le temps, va dans les classes AvionBlockinQueue et AvionCircularBuffer et 
+change le temps des wait dans la fonction run). Efface ce commentaire dans le rapport bien évidemment xD.
+pour le rapport justement, il te suffit de faire 2,3 pages je pense. j'ai entièrement commenté le code, il n'est vraiment pas difficile à comprendre.
+Demande moi si jamais. Va voir le cahier des charges et je pense que tu peux expliquer chaque point du chapite travail à rendre. Du moins c'est ce que je ferais.
+Tu expliques un peu le comportement général une fois que tu as lu mes commentaires. Ce n'est pas foncièrement compliqué je pense. merci si tu arrives à le faire.
+
 Test de temps avec l'ordinateur de Pedro (processeur avec 2 coeur phyisque --> 4 logiques) : 
 
 - Temps avec des wait fixés aléatoirement -- Les configurations sont fixées ainsi : 20 avions, 2 pistes d'arrivées, 2 pistes de départs, 2 places de parking
@@ -15,7 +32,7 @@ Temps d'exécution : 28637 ms
 *******************************Fin de la séquence de test de performances*******************************
 
 ********************Début de la séquence des tests d'influence sur la Blocking Queue********************
-Démarrage du test de la variation du nombre de pistes d'arrivées
+Démarrage du test de la variation du nombre de pistes d'arrivée
 Nombre de piste(s) : 1 -- Temps : 45094 ms
 Nombre de piste(s) : 2 -- Temps : 29267 ms
 Nombre de piste(s) : 3 -- Temps : 28899 ms
@@ -36,7 +53,7 @@ Nombre de piste(s) : 17 -- Temps : 26261 ms
 Nombre de piste(s) : 18 -- Temps : 28254 ms
 Nombre de piste(s) : 19 -- Temps : 28237 ms
 Nombre de piste(s) : 20 -- Temps : 28764 ms
-Fin du test de la variation du nombre de pistes d'arrivées !
+Fin du test de la variation du nombre de pistes d'arrivée !
 
 Démarrage du test de la variation du nombre de pistes de départs
 Nombre de piste(s) : 1 -- Temps : 43412 ms
@@ -84,6 +101,9 @@ Nombre de place(s) : 19 -- Temps : 10514 ms
 Nombre de place(s) : 20 -- Temps : 9304 ms
 Fin du test de la variation du nombre de place dans le parking !
 
+
+
+
 - Temps avec des waits fixés à 1000 ms -- Même configurations
 
 ******************************Début de la séquence de test de performances******************************
@@ -95,7 +115,7 @@ Temps d'exécution : 13091 ms
 *******************************Fin de la séquence de test de performances*******************************
 
 ********************Début de la séquence des tests d'influence sur la Blocking Queue********************
-Démarrage du test de la variation du nombre de pistes d'arrivées
+Démarrage du test de la variation du nombre de pistes d'arrivée
 Nombre de piste(s) : 1 -- Temps : 23090 ms
 Nombre de piste(s) : 2 -- Temps : 13080 ms
 Nombre de piste(s) : 3 -- Temps : 13126 ms
@@ -116,7 +136,7 @@ Nombre de piste(s) : 17 -- Temps : 13104 ms
 Nombre de piste(s) : 18 -- Temps : 13084 ms
 Nombre de piste(s) : 19 -- Temps : 13077 ms
 Nombre de piste(s) : 20 -- Temps : 13075 ms
-Fin du test de la variation du nombre de pistes d'arrivées !
+Fin du test de la variation du nombre de pistes d'arrivée !
 
 Démarrage du test de la variation du nombre de pistes de départs
 Nombre de piste(s) : 1 -- Temps : 23084 ms

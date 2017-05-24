@@ -22,10 +22,14 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 
-/**
- *
- * @author pedro.costa
- */
+/*******************************************************************************
+* Ici le fonctionnement est exactement le même que dans la frame
+* AirportFrameBlockingQueue, on fait exactement les mêmes étapes, seulement que 
+* nous utilisons les AvionCircularBuffer.
+* 
+* Veuillez donc vous référez aux commentaires de la frame citée ci dessus pour 
+* comprendre le fonctionnement de la frame si présente.
+*******************************************************************************/
 public class AirportFrameCircularBuffer extends JFrame{
     private static final long serialVersionUID = 1L;
 

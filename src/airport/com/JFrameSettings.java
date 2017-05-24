@@ -15,6 +15,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
+import javax.swing.SpinnerModel;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.text.NumberFormatter;
 
 /**
@@ -23,8 +25,10 @@ import javax.swing.text.NumberFormatter;
  */
 public class JFrameSettings extends JFrame {
 
-    JPanel getSettings;
+    //Panel
 
+    JPanel panelSettings;
+    //Labels de la frame settings
     JLabel nombreAvion;
     JLabel nombrePisteArr;
     JLabel nombrePisteDep;
@@ -32,21 +36,22 @@ public class JFrameSettings extends JFrame {
     JLabel blockingQueue;
     JLabel circularlTable;
     JLabel modeTest;
-
+    //Spinner permettant la saisie des valeurs correspondantes
     JSpinner inputNbrAvion;
     JSpinner inputNbrPisteArr;
     JSpinner inputNbrPisteDep;
     JSpinner inputNbrPlace;
-
+    //Bouton de confirmation des settings
     JButton ok;
-
+    //CheckBox qui permettront de choisir le mode dans lequel on veut lancer l'application.
     JCheckBox checkBoxBlockingQueue;
     JCheckBox checkBoxCircularTable;
     JCheckBox checkBoxModeTest;
 
     public JFrameSettings() {
-        getSettings = new JPanel();
-
+        //Constructeur de tous les attributs.
+        panelSettings = new JPanel();
+        //Labels permettant la compréhension de l'interface
         nombreAvion = new JLabel("Entrez le nombre d'avions");
         nombrePisteArr = new JLabel("Entrez le nombre de piste d'arrivées");
         nombrePisteDep = new JLabel("Entrez le nombre de piste de départs");
@@ -54,27 +59,60 @@ public class JFrameSettings extends JFrame {
         blockingQueue = new JLabel("Blocking Queue");
         circularlTable = new JLabel("Circular Buffer");
         modeTest = new JLabel("Mode Test");
-
-        inputNbrAvion = new JSpinner();
-        inputNbrAvion.setValue(Tools.nbAvion);
-        inputNbrPisteArr = new JSpinner();
-        inputNbrPisteArr.setValue(Tools.nbPisteArr);
-        inputNbrPisteArr.setSize(100, 25);
-        inputNbrPisteDep = new JSpinner();
-        inputNbrPisteDep.setValue(Tools.nbPisteDep);
-        inputNbrPisteDep.setSize(100, 25);
-        inputNbrPlace = new JSpinner();
-        inputNbrPlace.setValue(Tools.nbPlace);
-        inputNbrPlace.setSize(100, 25);
-
+        //Spinner initié de manière à ne pas entrer des valeurs absurdes
+        inputNbrAvion = new JSpinner(new SpinnerNumberModel(Tools.nbAvion, 1, 100, 1));
+        inputNbrPisteArr = new JSpinner(new SpinnerNumberModel(Tools.nbPisteArr, 1, 100, 1));
+        inputNbrPisteDep = new JSpinner(new SpinnerNumberModel(Tools.nbPisteDep, 1, 100, 1));
+        inputNbrPlace = new JSpinner(new SpinnerNumberModel(Tools.nbPlace, 1, 100, 1));
+        //Fonction qui permettra de checker la saisie correcte (que des nombres) des valeurs des spinners
         checkFormatSpinner();
-
+        //Bouton de confirmation
         ok = new JButton("OK");
-
+        //Initiation des checkboxes
         checkBoxBlockingQueue = new JCheckBox();
         checkBoxCircularTable = new JCheckBox();
         checkBoxModeTest = new JCheckBox();
-
+        
+        //Événements des check boxes permettant de ne pas lancer le mode test si on veut lancer l'application en mode graphique
+        event();
+        
+        //Layout permettant d'alligner un minimum nos champs
+        FlowLayout layout = new FlowLayout();
+        layout.setAlignment(FlowLayout.LEFT);
+        panelSettings.setLayout(layout);
+        
+        //Ajout de nos composants au panel
+        panelSettings.add(nombreAvion);
+        panelSettings.add(inputNbrAvion);
+        panelSettings.add(nombrePisteArr);
+        panelSettings.add(inputNbrPisteArr);
+        panelSettings.add(nombrePisteDep);
+        panelSettings.add(inputNbrPisteDep);
+        panelSettings.add(nomrePlace);
+        panelSettings.add(inputNbrPlace);
+        panelSettings.add(blockingQueue);
+        panelSettings.add(checkBoxBlockingQueue);
+        panelSettings.add(circularlTable);
+        panelSettings.add(checkBoxCircularTable);
+        panelSettings.add(modeTest);
+        panelSettings.add(checkBoxModeTest);
+        panelSettings.add(ok);
+        
+        //Ajout du panel à la frame
+        add(panelSettings);
+        //Configs de la frame
+        setVisible(true);
+        setSize(350, 300);
+        setResizable(false);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setTitle("Configurations de l'aéroport");
+    }
+    
+    /*------------------------------------------------------------------*\
+    |*			Methodes Private				*|
+    \*------------------------------------------------------------------*/
+    
+    private void event(){
         checkBoxBlockingQueue.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -111,39 +149,10 @@ public class JFrameSettings extends JFrame {
                 }
             }
         });
-
-        FlowLayout layout = new FlowLayout();
-        layout.setAlignment(FlowLayout.LEFT);
-
-        getSettings.setLayout(layout);
-
-        getSettings.add(nombreAvion);
-        getSettings.add(inputNbrAvion);
-        getSettings.add(nombrePisteArr);
-        getSettings.add(inputNbrPisteArr);
-        getSettings.add(nombrePisteDep);
-        getSettings.add(inputNbrPisteDep);
-        getSettings.add(nomrePlace);
-        getSettings.add(inputNbrPlace);
-        getSettings.add(blockingQueue);
-        getSettings.add(checkBoxBlockingQueue);
-        getSettings.add(circularlTable);
-        getSettings.add(checkBoxCircularTable);
-        getSettings.add(modeTest);
-        getSettings.add(checkBoxModeTest);
-
-        getSettings.add(ok);
-
-        add(getSettings);
-
-        setVisible(true);
-        setSize(300, 300);
-        setResizable(false);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setTitle("Configurations de l'aéroport");
     }
-
+    
     private void checkFormatSpinner() {
+        //Façon trouvée sur internet pour empêcher de saisir autre chose que des nombres dans nos spinners
         JFormattedTextField avionFormat = ((JSpinner.NumberEditor) inputNbrAvion.getEditor()).getTextField();
         ((NumberFormatter) avionFormat.getFormatter()).setAllowsInvalid(false);
 
@@ -156,7 +165,11 @@ public class JFrameSettings extends JFrame {
         JFormattedTextField placeFormat = ((JSpinner.NumberEditor) inputNbrPlace.getEditor()).getTextField();
         ((NumberFormatter) placeFormat.getFormatter()).setAllowsInvalid(false);
     }
-
+    
+    /*------------------------------------------------------------------*\
+    |*                              Get                                 *|
+    \*------------------------------------------------------------------*/
+    
     public JCheckBox getCheckBoxModeTest() {
         return checkBoxModeTest;
     }

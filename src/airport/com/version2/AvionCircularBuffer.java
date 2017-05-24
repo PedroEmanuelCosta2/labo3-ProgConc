@@ -7,27 +7,28 @@ package airport.com.version2;
 
 import java.util.Random;
 
-/**
- *
- * @author pedro.costa
- */
-public class AvionCircularBuffer implements Runnable{
-
-    AirportFrameCircularBuffer airportFrame;
-    String codePlane;
+/*******************************************************************************
+ * Le comportement de cette classe est exactement le même que la classe
+ * AvionBlockingQueue, seulement nous utilison des CircularBuffer qui a été 
+ * créé par nos soins. (voir classe CircularBuffer)
+ * Pour avoir plus de détails sur le comportement de cette classe veuillez vous
+ * référez aux commentaires de la classe AvionBlockingQueue. 
+ ******************************************************************************/
+public class AvionCircularBuffer implements Runnable {
+    //Frame sur laquelle les avions seront affichés.
+    private AirportFrameCircularBuffer airportFrame;
+    //Code de l'avion
+    private String codePlane;
+    //Objet random
+    private static Random random = new Random();
+    //Les circulars buffers permettant le bon déroulement des étapes de l'avion.
     CircularBuffer<AvionCircularBuffer> airArr;
     CircularBuffer<AvionCircularBuffer> tarmacLand;
     CircularBuffer<AvionCircularBuffer> tarmacTakeOff;
     CircularBuffer<AvionCircularBuffer> terminal;
     CircularBuffer<AvionCircularBuffer> airDep;
-    int nbAvion;
-    int nbPisteArr;
-    int nbPisteDep;
-    int nbPlace;
-
-    int position;
-
-    public AvionCircularBuffer(AirportFrameCircularBuffer _airportFrame, String _codePlane, CircularBuffer<AvionCircularBuffer> _airArr, CircularBuffer<AvionCircularBuffer> _tarmacLand, CircularBuffer<AvionCircularBuffer> _tarmacTakeOff, CircularBuffer<AvionCircularBuffer> _terminal, CircularBuffer<AvionCircularBuffer> _airDep, int _nbAvion, int _nbPisteArr, int _nbPisteDep, int _nbPlace) {
+    //Constructeur de l'avion
+    public AvionCircularBuffer(AirportFrameCircularBuffer _airportFrame, String _codePlane, CircularBuffer<AvionCircularBuffer> _airArr, CircularBuffer<AvionCircularBuffer> _tarmacLand, CircularBuffer<AvionCircularBuffer> _tarmacTakeOff, CircularBuffer<AvionCircularBuffer> _terminal, CircularBuffer<AvionCircularBuffer> _airDep) {
         airportFrame = _airportFrame;
         codePlane = _codePlane;
 
@@ -36,11 +37,6 @@ public class AvionCircularBuffer implements Runnable{
         tarmacTakeOff = _tarmacTakeOff;
         terminal = _terminal;
         airDep = _airDep;
-
-        nbAvion = _nbAvion;
-        nbPisteArr = _nbPisteArr;
-        nbPisteDep = _nbPisteDep;
-        nbPlace = _nbPlace;
     }
 
     @Override
@@ -48,13 +44,13 @@ public class AvionCircularBuffer implements Runnable{
         try {
             //Remplacer les nextRandomTime par 1000 (ms) pour avoir des temps fixes.
             arrive();
-            Thread.sleep(1000);
+            Thread.sleep(nextRandomTime());
             atterit();
-            Thread.sleep(1000);
+            Thread.sleep(nextRandomTime());
             parque();
-            Thread.sleep(1000);
+            Thread.sleep(nextRandomTime());
             decolle();
-            Thread.sleep(1000);
+            Thread.sleep(nextRandomTime());
             part();
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -104,10 +100,4 @@ public class AvionCircularBuffer implements Runnable{
         }
         return ret + 1000;
     }
-
-    /*------------------------------------------------------------------*\
-     |*                     Attributs Private				*|
-     \*------------------------------------------------------------------*/
-    private static Random random = new Random();
-    
 }

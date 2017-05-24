@@ -43,6 +43,8 @@ public class AirportFrameBlockingQueue extends JFrame {
     private JButton start;
     private JButton stop;
     
+    //Attribut très important qui permet de définir si l'aéroport est ouvert ou non. 
+    //Ce qui signifie si on peut accéder à ses ressources ou non.
     private boolean isOpen = false;
 
     private int nbPisteArr;
@@ -54,7 +56,7 @@ public class AirportFrameBlockingQueue extends JFrame {
     \*------------------------------------------------------------------*/
 
     public AirportFrameBlockingQueue(int _nbPisteArr, int _nbPisteDep, int _nbPlace, int _nbAvion) {
-
+        //Code original donné par la professeur
         nbPisteArr = _nbPisteArr;
         nbPisteDep = _nbPisteDep;
         nbPlace = _nbPlace;
@@ -147,18 +149,21 @@ public class AirportFrameBlockingQueue extends JFrame {
         bouton.setLayout(new GridLayout(1, 2));
         JPanel start = new JPanel();
         JPanel stop = new JPanel();
+        //Modification ici du code en utilisant des boutons comme attributs initialisés plus haut.
         this.start = new JButton("Start");
         this.stop = new JButton("Stop");
         this.stop.setEnabled(false);
         start.add(this.start);
         stop.add(this.stop);
         
+        //L'utilisation de ces attributs permet de gérer ainsi leurs événements
         this.start.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                //Ici on synchronise la frame
                 synchronized(AirportFrameBlockingQueue.this){
-                    AirportFrameBlockingQueue.this.isOpen = true;
-                    AirportFrameBlockingQueue.this.notifyAll();
+                    AirportFrameBlockingQueue.this.isOpen = true; //Pour en suite mettre l'attribut isOpen à true et
+                    AirportFrameBlockingQueue.this.notifyAll(); //indique à tous les threads de se réveiller.
                     
                     AirportFrameBlockingQueue.this.start.setEnabled(false);
                     AirportFrameBlockingQueue.this.stop.setEnabled(true);
@@ -170,8 +175,8 @@ public class AirportFrameBlockingQueue extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 synchronized(AirportFrameBlockingQueue.this){
-                    AirportFrameBlockingQueue.this.isOpen = false;
-                    
+                    AirportFrameBlockingQueue.this.isOpen = false; //Mets isOpen à false, on ne fait pas de wait ici
+                    //ça met le cheni sinon. On prendra en compte les wait plus bas.
                     AirportFrameBlockingQueue.this.start.setEnabled(true);
                     AirportFrameBlockingQueue.this.stop.setEnabled(false);
                 }
@@ -191,19 +196,21 @@ public class AirportFrameBlockingQueue extends JFrame {
     /*------------------------------------------------------------------*\
     |*                      Methodes Publique     			*|
     \*------------------------------------------------------------------*/
-
+    //Permet de récupérer le bouton ok depuis maintest
     public JButton getStart() {
         return start;
     }        
-
+    //Gère lorsque l'avion arrive
     public synchronized void updateArrive(AvionBlockingQueue avion) throws InterruptedException {
-        while(!isOpen){
-            wait();
+        while(!isOpen){ //C'est ici qu'on prend en compte les wait. Tant que l'aéroport n'est pas ouvert,                        
+            wait(); //on ne passe pas à la suite.
         }
-        avionOnAirArray.add(avion);
-        nbOnAirLabel.setText("nb avion en air (arrive) : " + avionOnAirArray.size());
+        avionOnAirArray.add(avion); //Ajoute l'avion à la liste des avions en l'air.
+        nbOnAirLabel.setText("nb avion en air (arrive) : " + avionOnAirArray.size()); //Update le texte en fonciton de la taille de cette dernière.
     }
-
+    //Toutes les fonctions ci-dessous font basiquement la même chose que celle en dessus. 
+    //On change de liste les avions au fur et à mesure, ce qui permet de les faire changer d'étapes.
+    //On fait bien attention de mettre à jour les textes correspondants.
     public synchronized void updateAtterrit(AvionBlockingQueue avion) throws InterruptedException {
         while(!isOpen){
             wait();
@@ -256,6 +263,11 @@ public class AirportFrameBlockingQueue extends JFrame {
     /*------------------------------------------------------------------*\
     |*                      Methodes Private     			*|
     \*------------------------------------------------------------------*/
+    //Ici ces trois fonctions permettent de gérer les images des avions avec 
+    //les codes correspondants. Ces dernières feront donc défiler les images des
+    //avions en fonction de leur changement de place dans les listes correspondantes.
+    
+    //Ici lorsque l'avion décolle de la piste de départ.
     private void updateTakeOfLabel() {
         for (int i = 0; i < nbPisteDep; i++) {
             if (i < avionTakeOffArray.size()) {
@@ -266,7 +278,7 @@ public class AirportFrameBlockingQueue extends JFrame {
             }
         }
     }
-
+    //Ici lorque l'avion est parqué.
     private void updateTerminalLabel() {
         for (int i = 0; i < nbPlace; i++) {
             if (i < avionTermArray.size()) {
@@ -277,7 +289,7 @@ public class AirportFrameBlockingQueue extends JFrame {
             }
         }
     }
-
+    //Ici lorsque l'avion attérit.
     private void updateLandingLabel() {
         for (int i = 0; i < nbPisteArr; i++) {
             if (i < avionLandingArray.size()) {
