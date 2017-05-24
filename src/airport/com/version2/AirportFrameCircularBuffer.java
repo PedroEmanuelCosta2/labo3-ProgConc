@@ -1,11 +1,18 @@
-package airport.com;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package airport.com.version2;
 
+import airport.com.Tools;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -13,17 +20,21 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 
-public class AirportFrame extends JFrame {
-
+/**
+ *
+ * @author pedro.costa
+ */
+public class AirportFrameCircularBuffer extends JFrame{
     private static final long serialVersionUID = 1L;
 
     // liste d'avion à chaque endroits
-    private List<Avion> avionOnAirArray;
-    private List<Avion> avionLandingArray;
-    private List<Avion> avionTermArray;
-    private List<Avion> avionTakeOffArray;
-    private List<Avion> avionOnAirLeaveArray;
+    private List<AvionCircularBuffer> avionOnAirArray;
+    private List<AvionCircularBuffer> avionLandingArray;
+    private List<AvionCircularBuffer> avionTermArray;
+    private List<AvionCircularBuffer> avionTakeOffArray;
+    private List<AvionCircularBuffer> avionOnAirLeaveArray;
 
     // images d'avion
     private ArrayList<JLabel> listTerm;
@@ -35,6 +46,12 @@ public class AirportFrame extends JFrame {
     private JLabel nbTermLabel;
     private JLabel nbTakeOffLabel;
     private JLabel nbOnAirLeaveLabel;
+    
+    //Attributs boutons
+    private JButton start;
+    private JButton stop;
+    
+    private boolean isOpen = false;
 
     private int nbPisteArr;
     private int nbPisteDep;
@@ -44,21 +61,21 @@ public class AirportFrame extends JFrame {
     |*                      Constructeur        			*|
     \*------------------------------------------------------------------*/
 
-    public AirportFrame(int _nbPisteArr, int _nbPisteDep, int _nbPlace, int _nbAvion) {
+    public AirportFrameCircularBuffer(int _nbPisteArr, int _nbPisteDep, int _nbPlace, int _nbAvion) {
 
         nbPisteArr = _nbPisteArr;
         nbPisteDep = _nbPisteDep;
         nbPlace = _nbPlace;
 
-        avionOnAirArray = new ArrayList<Avion>();
-        avionLandingArray = new ArrayList<Avion>();
-        avionTermArray = new ArrayList<Avion>();
-        avionTakeOffArray = new ArrayList<Avion>();
-        avionOnAirLeaveArray = new ArrayList<Avion>();
+        avionOnAirArray = new ArrayList<AvionCircularBuffer>();
+        avionLandingArray = new ArrayList<AvionCircularBuffer>();
+        avionTermArray = new ArrayList<AvionCircularBuffer>();
+        avionTakeOffArray = new ArrayList<AvionCircularBuffer>();
+        avionOnAirLeaveArray = new ArrayList<AvionCircularBuffer>();
 
         listArr = new ArrayList<JLabel>();
         listTerm = new ArrayList<JLabel>();
-        listDep = new ArrayList<JLabel>();
+        listDep = new ArrayList<JLabel>();       
 
         JPanel panel = new JPanel(new BorderLayout());
 
@@ -140,8 +157,34 @@ public class AirportFrame extends JFrame {
         JPanel stop = new JPanel();
         this.start = new JButton("Start");
         this.stop = new JButton("Stop");
+        this.stop.setEnabled(false);
         start.add(this.start);
         stop.add(this.stop);
+        
+        this.start.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                synchronized(AirportFrameCircularBuffer.this){
+                    AirportFrameCircularBuffer.this.isOpen = true;
+                    AirportFrameCircularBuffer.this.notifyAll();
+                    
+                    AirportFrameCircularBuffer.this.start.setEnabled(false);
+                    AirportFrameCircularBuffer.this.stop.setEnabled(true);
+                }
+            }
+        });
+        
+        this.stop.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                synchronized(AirportFrameCircularBuffer.this){
+                    AirportFrameCircularBuffer.this.isOpen = false;
+                    
+                    AirportFrameCircularBuffer.this.start.setEnabled(true);
+                    AirportFrameCircularBuffer.this.stop.setEnabled(false);
+                }
+            }
+        });
 
         bouton.add(start);
         bouton.add(stop);
@@ -149,20 +192,30 @@ public class AirportFrame extends JFrame {
 
         this.getContentPane().add(panel);
 
-        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        this.setTitle("Labo 3 - Gestion d'un aéroport");
+        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        this.setTitle("Labo 3 - Gestion d'un aéroport - CircularBuffer");
     }
     
     /*------------------------------------------------------------------*\
     |*                      Methodes Publique     			*|
     \*------------------------------------------------------------------*/
 
-    public synchronized void updateArrive(Avion avion) {
+    public JButton getStart() {
+        return start;
+    } 
+    
+    public synchronized void updateArrive(AvionCircularBuffer avion) throws InterruptedException {
+        while(!isOpen){
+            wait();
+        }
         avionOnAirArray.add(avion);
         nbOnAirLabel.setText("nb avion en air (arrive) : " + avionOnAirArray.size());
     }
 
-    public synchronized void updateAtterrit(Avion avion) {
+    public synchronized void updateAtterrit(AvionCircularBuffer avion) throws InterruptedException {
+        while(!isOpen){
+            wait();
+        }
         avionOnAirArray.remove(avion);
         avionLandingArray.add(avion);
         nbLandingLabel.setText("nb avion en approche : " + avionLandingArray.size());
@@ -171,7 +224,10 @@ public class AirportFrame extends JFrame {
         updateLandingLabel();
     }
 
-    public synchronized void updatePark(Avion avion) {
+    public synchronized void updatePark(AvionCircularBuffer avion) throws InterruptedException {
+        while(!isOpen){
+            wait();
+        }
         avionLandingArray.remove(avion);
         avionTermArray.add(avion);
         nbLandingLabel.setText("nb avion en approche : " + avionLandingArray.size());
@@ -181,7 +237,10 @@ public class AirportFrame extends JFrame {
         updateTerminalLabel();
     }
 
-    public synchronized void updateDecolle(Avion avion) {
+    public synchronized void updateDecolle(AvionCircularBuffer avion) throws InterruptedException {
+        while(!isOpen){
+            wait();
+        }
         avionTermArray.remove(avion);
         avionTakeOffArray.add(avion);
         nbTermLabel.setText("nb avion au terminal : " + avionTermArray.size());
@@ -191,23 +250,16 @@ public class AirportFrame extends JFrame {
         updateTakeOfLabel();
     }
 
-    public synchronized void updatePart(Avion avion) {
+    public synchronized void updatePart(AvionCircularBuffer avion) throws InterruptedException {
+        while(!isOpen){
+            wait();
+        }
         avionTakeOffArray.remove(avion);
         avionOnAirLeaveArray.add(avion);
-        nbTakeOffLabel.setText("nb avion au d�part : " + avionTakeOffArray.size());
+        nbTakeOffLabel.setText("nb avion au départ : " + avionTakeOffArray.size());
         nbOnAirLeaveLabel.setText("nb avion en air (depart) : " + avionOnAirLeaveArray.size());
         updateTakeOfLabel();
-    }
-    
-    public JButton getStart()
-    {
-        return this.start;
-    }
-    
-    public JButton getStop()
-    {
-        return this.stop;
-    }
+    }    
 
     /*------------------------------------------------------------------*\
     |*                      Methodes Private     			*|
@@ -243,9 +295,5 @@ public class AirportFrame extends JFrame {
                 listArr.get(i).setVisible(false);
             }
         }
-    }
-    
-    //Attributs boutons
-    private JButton start;
-    private JButton stop;
+    }        
 }

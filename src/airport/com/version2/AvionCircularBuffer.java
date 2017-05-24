@@ -1,18 +1,25 @@
-package airport.com;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package airport.com.version2;
 
 import java.util.Random;
-import java.util.concurrent.BlockingQueue;
-//represente l'avion
 
-public class Avion implements Runnable {
+/**
+ *
+ * @author pedro.costa
+ */
+public class AvionCircularBuffer implements Runnable{
 
-    AirportFrame airportFrame;
+    AirportFrameCircularBuffer airportFrame;
     String codePlane;
-    BlockingQueue<Avion> airArr;
-    BlockingQueue<Avion> tarmacLand;
-    BlockingQueue<Avion> tarmacTakeOff;
-    BlockingQueue<Avion> terminal;
-    BlockingQueue<Avion> airDep;
+    CircularBuffer<AvionCircularBuffer> airArr;
+    CircularBuffer<AvionCircularBuffer> tarmacLand;
+    CircularBuffer<AvionCircularBuffer> tarmacTakeOff;
+    CircularBuffer<AvionCircularBuffer> terminal;
+    CircularBuffer<AvionCircularBuffer> airDep;
     int nbAvion;
     int nbPisteArr;
     int nbPisteDep;
@@ -20,7 +27,7 @@ public class Avion implements Runnable {
 
     int position;
 
-    public Avion(AirportFrame _airportFrame, String _codePlane, BlockingQueue<Avion> _airArr, BlockingQueue<Avion> _tarmacLand, BlockingQueue<Avion> _tarmacTakeOff, BlockingQueue<Avion> _terminal, BlockingQueue<Avion> _airDep, int _nbAvion, int _nbPisteArr, int _nbPisteDep, int _nbPlace) {
+    public AvionCircularBuffer(AirportFrameCircularBuffer _airportFrame, String _codePlane, CircularBuffer<AvionCircularBuffer> _airArr, CircularBuffer<AvionCircularBuffer> _tarmacLand, CircularBuffer<AvionCircularBuffer> _tarmacTakeOff, CircularBuffer<AvionCircularBuffer> _terminal, CircularBuffer<AvionCircularBuffer> _airDep, int _nbAvion, int _nbPisteArr, int _nbPisteDep, int _nbPlace) {
         airportFrame = _airportFrame;
         codePlane = _codePlane;
 
@@ -39,15 +46,15 @@ public class Avion implements Runnable {
     @Override
     public void run() {
         try {
-            //long wait = 500;
+            //Remplacer les nextRandomTime par 1000 (ms) pour avoir des temps fixes.
             arrive();
-            Thread.sleep(nextRandomTime());
+            Thread.sleep(1000);
             atterit();
-            Thread.sleep(nextRandomTime());
+            Thread.sleep(1000);
             parque();
-            Thread.sleep(nextRandomTime());
+            Thread.sleep(1000);
             decolle();
-            Thread.sleep(nextRandomTime());
+            Thread.sleep(1000);
             part();
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -58,31 +65,31 @@ public class Avion implements Runnable {
      |*			Methodes Private				*|
      \*------------------------------------------------------------------*/
     private synchronized void arrive() throws InterruptedException {
-        airArr.put(this);
+        airArr.push(this);
         airportFrame.updateArrive(this);
     }
 
     private synchronized void atterit() throws InterruptedException {
-        tarmacLand.put(this);
-        airArr.remove(this);
+        tarmacLand.push(this);
+        airArr.pull();
         airportFrame.updateAtterrit(this);
     }
 
     private synchronized void parque() throws InterruptedException {
-        terminal.put(this);
-        tarmacLand.remove(this);
+        terminal.push(this);
+        tarmacLand.pull();
         airportFrame.updatePark(this);
     }
 
     private synchronized void decolle() throws InterruptedException {
-        tarmacTakeOff.put(this);
-        terminal.remove(this);
+        tarmacTakeOff.push(this);
+        terminal.pull();
         airportFrame.updateDecolle(this);
     }
 
     private synchronized void part() throws InterruptedException {
-        airDep.put(this);
-        tarmacTakeOff.remove(this);
+        airDep.push(this);
+        tarmacTakeOff.pull();
         airportFrame.updatePart(this);
     }
 
@@ -102,5 +109,5 @@ public class Avion implements Runnable {
      |*                     Attributs Private				*|
      \*------------------------------------------------------------------*/
     private static Random random = new Random();
-
+    
 }
